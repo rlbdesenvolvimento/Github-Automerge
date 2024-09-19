@@ -19,7 +19,7 @@ jobs:
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         
     - name: Fetch all branches
-      run: git fetch --all
+      run: git fetch --all +refs/heads/*:refs/remotes/origin/*
 
     - name: Merge branch
       run: |
