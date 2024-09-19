@@ -1,32 +1,41 @@
-name: Auto Merge Branches
+name: Auto Create and Approve PR
 
 on:
   push:
     branches:
-      - main # Substitua pelo nome da branch de origem
+      - main # Branch de origem
 
 jobs:
-  auto-merge:
+  create-and-merge-pr:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-      
+
     - name: Setup Git
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        
+
     - name: Fetch all branches
       run: git fetch --all
 
-    - name: Merge branch
+    - name: Create Pull Request
+      id: create_pr
       run: |
-        git checkout homolog # Substitua pelo nome da branch de destino
-        git merge main # Substitua pelo nome da branch de origem
-        git push origin homolog
+        # Utilizando a GitHub CLI para criar o PR
+        gh pr create --base homolog --head main --title "Auto Merge: main -> homolog" --body "Merge automático de main para homolog."
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Handle merge conflicts
-      if: failure() && contains(steps.auto-merge.outputs.error_message, 'CONFLICT')
-      run: echo "Merge conflicts detected, manual intervention required."
+    - name: Approve and Merge Pull Request
+      id: merge_pr
+      run: |
+        # Extrair o número do PR criado
+        PR_NUMBER=$(gh pr list --state open --head main --base homolog --json number -q '.[0].number')
+
+        # Mesclar o PR
+        gh pr merge $PR_NUMBER --squash --admin --delete-branch
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
