@@ -35,9 +35,6 @@ jobs:
         # Extrair o número do PR criado
         PR_NUMBER=$(gh pr list --state open --head main --base homolog --json number -q '.[0].number')
 
-        # Aprovar o PR
-        gh pr review --approve $PR_NUMBER
-
         # Mesclar o PR
         gh pr merge $PR_NUMBER --squash --admin --delete-branch
       env:
