@@ -24,7 +24,7 @@ jobs:
     - name: Merge branch
       run: |
         git checkout homolog # Substitua pelo nome da branch de destino
-        git merge main # Substitua pelo nome da branch de origem
+        git merge main --allow-unrelated-histories # Substitua pelo nome da branch de origem
         git push origin homolog
 
     - name: Handle merge conflicts
