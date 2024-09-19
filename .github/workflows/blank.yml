@@ -1,0 +1,32 @@
+name: Auto Merge Branches
+
+on:
+  push:
+    branches:
+      - main # Substitua pelo nome da branch de origem
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Git
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        
+    - name: Fetch all branches
+      run: git fetch --all
+
+    - name: Merge branch
+      run: |
+        git checkout homolog # Substitua pelo nome da branch de destino
+        git merge main # Substitua pelo nome da branch de origem
+        git push origin homolog
+
+    - name: Handle merge conflicts
+      if: failure() && contains(steps.auto-merge.outputs.error_message, 'CONFLICT')
+      run: echo "Merge conflicts detected, manual intervention required."
