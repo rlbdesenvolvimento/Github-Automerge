@@ -36,6 +36,6 @@ jobs:
         PR_NUMBER=$(gh pr list --state open --head main --base homolog --json number -q '.[0].number')
 
         # Mesclar o PR
-        gh pr merge $PR_NUMBER --squash --admin
+        gh pr merge $PR_NUMBER --merge --admin
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
